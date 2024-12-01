@@ -10,39 +10,17 @@ plugins {
 }
 
 group = "us.aldwin.test"
-version = "0.0.1-alpha2"
+version = "0.0.1-alpha3"
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-tasks.test {
-    useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
+allprojects {
+    repositories {
+        mavenCentral()
     }
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-kotlin {
-    jvmToolchain(17)
-    explicitApi()
-}
-
-tasks.withType<KotlinJvmCompile> {
-    compilerOptions {
-        allWarningsAsErrors.set(true)
-    }
+// no top-level jar
+tasks.named("jar") {
+    enabled = false
 }
 
 tasks.withType<DependencyUpdatesTask> {
@@ -55,14 +33,42 @@ tasks.withType<DependencyUpdatesTask> {
     }
 }
 
-ktlint {
-    verbose.set(true)
-    outputToConsole.set(true)
-    coloredOutput.set(true)
-    reporters {
-        reporter(ReporterType.PLAIN)
-        reporter(ReporterType.CHECKSTYLE)
-        reporter(ReporterType.JSON)
-        reporter(ReporterType.HTML)
+subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    kotlin {
+        jvmToolchain(17)
+        explicitApi()
+    }
+
+    tasks.withType<KotlinJvmCompile> {
+        compilerOptions {
+            allWarningsAsErrors.set(true)
+        }
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    ktlint {
+        verbose.set(true)
+        outputToConsole.set(true)
+        coloredOutput.set(true)
+        reporters {
+            reporter(ReporterType.PLAIN)
+            reporter(ReporterType.CHECKSTYLE)
+            reporter(ReporterType.JSON)
+            reporter(ReporterType.HTML)
+        }
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
     }
 }
