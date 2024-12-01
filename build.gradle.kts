@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "us.aldwin.test"
-version = "0.0.1-alpha"
+version = "0.0.1-alpha2"
 
 repositories {
     mavenCentral()
