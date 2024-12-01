@@ -7,10 +7,13 @@ plugins {
     kotlin("jvm") version "2.1.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
     id("com.github.ben-manes.versions") version "0.51.0"
+    id("org.jreleaser") version "1.15.0"
 }
 
 group = "us.aldwin.test"
-version = "0.0.1-alpha3"
+// SHOULD MATCH GIT TAG!
+// TODO @NJA: investigate a plugin for this
+version = "0.0.1-alpha4"
 
 allprojects {
     repositories {
@@ -53,6 +56,12 @@ subprojects {
         withSourcesJar()
     }
 
+    version = rootProject.version
+    tasks.withType<Jar> {
+        archiveBaseName.set(project.name)
+        archiveVersion.set(project.version.toString())
+    }
+
     ktlint {
         verbose.set(true)
         outputToConsole.set(true)
@@ -69,6 +78,54 @@ subprojects {
         useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
+        }
+    }
+}
+
+jreleaser {
+    dryrun.set(System.getenv("CI").isNullOrBlank())
+
+    project {
+        name.set("maven-central-test")
+        version.set(project.version.toString())
+        authors.set(listOf("Nick Aldwin"))
+        license.set("MIT")
+    }
+
+    release {
+        github {
+            repoOwner.set("NJAldwin")
+            name.set("maven-central-test")
+            branch.set("master")
+            // skip tag because we're running release on tag creation
+            skipTag.set(true)
+            prerelease {
+                enabled.set(true)
+                // match semver `x.y.z-something`
+                pattern.set("""\d+\.\d+\.\d+-.+""")
+            }
+            releaseNotes {
+                enabled.set(true)
+            }
+        }
+    }
+
+    distributions {
+        subprojects.filter { it.plugins.hasPlugin("java") }.forEach { subproject ->
+            create(subproject.name) {
+                project {
+                    description.set(subproject.description)
+                }
+                artifact {
+                    path.set(subproject.tasks.named<Jar>("jar").get().archiveFile.get().asFile)
+                }
+                artifact {
+                    path.set(subproject.tasks.named<Jar>("sourcesJar").get().archiveFile.get().asFile)
+                }
+                artifact {
+                    path.set(subproject.tasks.named<Jar>("javadocJar").get().archiveFile.get().asFile)
+                }
+            }
         }
     }
 }
