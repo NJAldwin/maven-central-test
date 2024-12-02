@@ -2,6 +2,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import org.jreleaser.model.Active
 
 plugins {
     kotlin("jvm") version "2.1.0"
@@ -13,7 +14,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-alpha9"
+version = "0.0.1-beta1"
 
 allprojects {
     repositories {
@@ -109,6 +110,22 @@ jreleaser {
                 enabled.set(true)
                 // match semver `x.y.z-something`
                 pattern.set("""\d+\.\d+\.\d+-.+""")
+            }
+        }
+    }
+
+    signing {
+        active.set(Active.ALWAYS)
+        armored.set(true)
+        verify.set(true)
+    }
+    deploy {
+        maven {
+            mavenCentral.create("sonatype") {
+                active.set(Active.ALWAYS)
+                url.set("https://central.sonatype.com/api/v1/publisher")
+                stagingRepositories.add("${layout.buildDirectory}/staging-deploy")
+                applyMavenCentralRules.set(true)
             }
         }
     }
