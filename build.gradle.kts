@@ -13,7 +13,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-alpha6"
+version = "0.0.1-alpha7"
 
 allprojects {
     repositories {
