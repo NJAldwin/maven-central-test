@@ -15,11 +15,13 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta6"
+version = "0.0.1-beta7"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
 val ghUrl = "https://github.com/$ghUser/$ghRepo"
+
+val topDesc = "A test project for Maven Central publishing"
 
 allprojects {
     repositories {
@@ -93,7 +95,7 @@ jreleaser {
 
     project {
         name.set("maven-central-test")
-        description.set("A test project for Maven Central publishing")
+        description.set(topDesc)
         version.set(rootProject.version.toString())
         authors.set(listOf("Nick Aldwin"))
         license.set("MIT")
@@ -144,7 +146,11 @@ jreleaser {
         subprojects.filter { it.plugins.hasPlugin("java") }.forEach { subproject ->
             create(subproject.name) {
                 project {
-                    description.set(subproject.description ?: "A test project for Maven Central publishing")
+                    description.set(
+                        providers.provider {
+                            subproject.description ?: topDesc
+                        },
+                    )
                 }
                 artifact {
                     path.set(subproject.tasks.named<Jar>("jar").get().archiveFile.get().asFile)
@@ -176,7 +182,11 @@ subprojects {
 
                     pom {
                         name.set(project.name)
-                        description.set(project.description ?: rootProject.jreleaser.project.description.get())
+                        description.set(
+                            providers.provider {
+                                project.description ?: topDesc
+                            },
+                        )
                         url.set(rootProject.jreleaser.project.links.homepage)
 
                         inceptionYear.set(rootProject.jreleaser.project.inceptionYear.get())
