@@ -15,7 +15,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta5"
+version = "0.0.1-beta6"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -134,6 +134,8 @@ jreleaser {
                     stagingRepositories.add("${subproject.layout.buildDirectory.get()}/staging-deploy")
                 }
                 applyMavenCentralRules.set(true)
+                retryDelay.set(20)
+                maxRetries.set(90)
             }
         }
     }
