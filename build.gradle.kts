@@ -2,7 +2,6 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
-import org.jreleaser.version.SemanticVersion
 
 plugins {
     kotlin("jvm") version "2.1.0"
@@ -14,7 +13,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-alpha5"
+version = "0.0.1-alpha6"
 
 allprojects {
     repositories {
