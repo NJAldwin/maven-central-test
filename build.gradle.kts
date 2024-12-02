@@ -15,7 +15,11 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta4"
+version = "0.0.1-beta5"
+
+val ghUser = "NJAldwin"
+val ghRepo = "maven-central-test"
+val ghUrl = "https://github.com/$ghUser/$ghRepo"
 
 allprojects {
     repositories {
@@ -95,14 +99,14 @@ jreleaser {
         license.set("MIT")
         inceptionYear.set("2024")
         links {
-            homepage = "https://github.com/NJAldwin/maven-central-test"
+            homepage = ghUrl
         }
     }
 
     release {
         github {
-            repoOwner.set("NJAldwin")
-            name.set("maven-central-test")
+            repoOwner.set(ghUser)
+            name.set(ghRepo)
             branch.set("master")
 
             // skip tag because we're running release on tag creation
@@ -187,9 +191,9 @@ subprojects {
                             }
                         }
                         scm {
-                            connection.set("scm:git:${rootProject.jreleaser.release.github.name.get()}.git")
-                            developerConnection.set("scm:git:ssh://github.com/${rootProject.jreleaser.release.github.name.get()}.git")
-                            url.set(rootProject.jreleaser.project.links.homepage)
+                            connection.set("scm:git:$ghUrl.git")
+                            developerConnection.set("scm:git:ssh://github.com/$ghUser/$ghRepo.git")
+                            url.set(ghUrl)
                         }
                     }
                 }
