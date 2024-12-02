@@ -5,7 +5,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import org.jreleaser.model.Active
 
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "1.9.25"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("org.jreleaser") version "1.15.0"
@@ -15,7 +15,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta7"
+version = "0.0.1-beta8"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
