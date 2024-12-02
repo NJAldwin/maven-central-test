@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Checkout sources
       uses: actions/checkout@v4
@@ -23,6 +25,4 @@ jobs:
     - name: Release with jReleaser
       env:
         JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      permissions:
-        contents: write
       run: ./gradlew --stacktrace assemble jreleaserFullRelease
