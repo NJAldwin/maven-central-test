@@ -9,12 +9,13 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
     id("com.github.ben-manes.versions") version "0.51.0"
     id("org.jreleaser") version "1.15.0"
+    id("maven-publish")
 }
 
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta2"
+version = "0.0.1-beta3"
 
 allprojects {
     repositories {
@@ -119,12 +120,15 @@ jreleaser {
         armored.set(true)
         verify.set(true)
     }
+
     deploy {
         maven {
             mavenCentral.create("sonatype") {
                 active.set(Active.ALWAYS)
                 url.set("https://central.sonatype.com/api/v1/publisher")
-                stagingRepositories.add("${layout.buildDirectory}/staging-deploy")
+                subprojects.filter { it.plugins.hasPlugin("java") }.forEach { subproject ->
+                    stagingRepositories.add("${subproject.layout.buildDirectory.get()}/staging-deploy")
+                }
                 applyMavenCentralRules.set(true)
             }
         }
@@ -146,6 +150,55 @@ jreleaser {
                 artifact {
                     path.set(subproject.tasks.named<Jar>("javadocJar").get().archiveFile.get().asFile)
                     platform.set("java-docs")
+                }
+            }
+        }
+    }
+}
+
+subprojects {
+    apply(plugin = "maven-publish")
+
+    plugins.withId("java") {
+        publishing {
+            publications {
+                create<MavenPublication>("maven") {
+                    groupId = project.group.toString()
+                    artifactId = project.name
+                    version = project.version.toString()
+
+                    from(components["java"])
+
+                    pom {
+                        name.set(rootProject.jreleaser.project.name.get())
+                        description.set(project.description ?: rootProject.jreleaser.project.description.get())
+                        url.set(rootProject.jreleaser.project.links.homepage)
+
+                        inceptionYear.set(rootProject.jreleaser.project.inceptionYear.get())
+                        licenses {
+                            license {
+                                name.set(rootProject.jreleaser.project.license.get())
+                                url.set("https://opensource.org/licenses/${rootProject.jreleaser.project.license.get()}")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set(rootProject.jreleaser.release.github.repoOwner.get())
+                                name.set(rootProject.jreleaser.project.authors.get().joinToString())
+                            }
+                        }
+                        scm {
+                            connection.set("scm:git:${rootProject.jreleaser.release.github.name.get()}.git")
+                            developerConnection.set("scm:git:ssh://github.com/${rootProject.jreleaser.release.github.name.get()}.git")
+                            url.set(rootProject.jreleaser.project.links.homepage)
+                        }
+                    }
+                }
+            }
+
+            repositories {
+                maven {
+                    url = layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
                 }
             }
         }
