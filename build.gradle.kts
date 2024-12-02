@@ -2,6 +2,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import org.jreleaser.version.SemanticVersion
 
 plugins {
     kotlin("jvm") version "2.1.0"
@@ -13,7 +14,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-alpha4"
+version = "0.0.1-alpha5"
 
 allprojects {
     repositories {
@@ -87,9 +88,14 @@ jreleaser {
 
     project {
         name.set("maven-central-test")
-        version.set(project.version.toString())
+        description.set("A test project for Maven Central publishing")
+        version.set(rootProject.version.toString())
         authors.set(listOf("Nick Aldwin"))
         license.set("MIT")
+        inceptionYear.set("2024")
+        links {
+            homepage = "https://github.com/NJAldwin/maven-central-test"
+        }
     }
 
     release {
@@ -97,15 +103,13 @@ jreleaser {
             repoOwner.set("NJAldwin")
             name.set("maven-central-test")
             branch.set("master")
+
             // skip tag because we're running release on tag creation
             skipTag.set(true)
             prerelease {
                 enabled.set(true)
                 // match semver `x.y.z-something`
                 pattern.set("""\d+\.\d+\.\d+-.+""")
-            }
-            releaseNotes {
-                enabled.set(true)
             }
         }
     }
@@ -114,16 +118,18 @@ jreleaser {
         subprojects.filter { it.plugins.hasPlugin("java") }.forEach { subproject ->
             create(subproject.name) {
                 project {
-                    description.set(subproject.description)
+                    description.set(subproject.description ?: "A test project for Maven Central publishing")
                 }
                 artifact {
                     path.set(subproject.tasks.named<Jar>("jar").get().archiveFile.get().asFile)
                 }
                 artifact {
                     path.set(subproject.tasks.named<Jar>("sourcesJar").get().archiveFile.get().asFile)
+                    platform.set("java-sources")
                 }
                 artifact {
                     path.set(subproject.tasks.named<Jar>("javadocJar").get().archiveFile.get().asFile)
+                    platform.set("java-docs")
                 }
             }
         }
