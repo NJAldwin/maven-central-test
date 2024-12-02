@@ -15,7 +15,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta3"
+version = "0.0.1-beta4"
 
 allprojects {
     repositories {
@@ -157,20 +157,19 @@ jreleaser {
 }
 
 subprojects {
-    apply(plugin = "maven-publish")
-
     plugins.withId("java") {
+        apply(plugin = "maven-publish")
         publishing {
             publications {
                 create<MavenPublication>("maven") {
-                    groupId = project.group.toString()
+                    groupId = rootProject.group.toString()
                     artifactId = project.name
-                    version = project.version.toString()
+                    version = rootProject.version.toString()
 
                     from(components["java"])
 
                     pom {
-                        name.set(rootProject.jreleaser.project.name.get())
+                        name.set(project.name)
                         description.set(project.description ?: rootProject.jreleaser.project.description.get())
                         url.set(rootProject.jreleaser.project.links.homepage)
 
