@@ -15,7 +15,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "0.0.1-beta8"
+version = "1.0.0"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -49,7 +49,7 @@ subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(8)
         explicitApi()
     }
 
