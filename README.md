@@ -1,6 +1,8 @@
 # maven-central-test
 
-![Maven Central Version](https://img.shields.io/maven-central/v/us.aldwin.test/maven-central-test)
+A test project to test the publishing of a project to Maven Central.
+
+[![Maven Central Version](https://img.shields.io/maven-central/v/us.aldwin.test/maven-central-test)](https://central.sonatype.com/artifact/us.aldwin.test/maven-central-test)
 
 https://central.sonatype.com/artifact/us.aldwin.test/maven-central-test
 

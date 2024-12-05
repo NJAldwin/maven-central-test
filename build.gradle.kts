@@ -15,7 +15,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.0.0"
+version = "1.0.1"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -114,7 +114,6 @@ jreleaser {
             // skip tag because we're running release on tag creation
             skipTag.set(true)
             prerelease {
-                enabled.set(true)
                 // match semver `x.y.z-something`
                 pattern.set("""\d+\.\d+\.\d+-.+""")
             }
