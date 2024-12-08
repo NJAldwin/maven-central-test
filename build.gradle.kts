@@ -17,7 +17,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.4.2"
+version = "1.4.3"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -309,6 +309,7 @@ tasks.register("makeDocs") {
                 <html>
                 <head>
                     <title>Latest Stable Documentation</title>
+                    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
                     <meta http-equiv="refresh" content="0; URL=../v${rootProject.version}/" />
                 </head>
                 <body>
@@ -325,6 +326,7 @@ tasks.register("makeDocs") {
             <html>
             <head>
                 <title>Latest Documentation</title>
+                <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
                 <meta http-equiv="refresh" content="0; URL=../v${rootProject.version}/" />
             </head>
             <body>
@@ -339,6 +341,7 @@ tasks.register("makeDocs") {
             <html>
             <head>
                 <title>Documentation Index</title>
+                <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
                 <meta http-equiv="refresh" content="0; URL=stable/" />
             </head>
             <body>
