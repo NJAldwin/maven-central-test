@@ -9,6 +9,7 @@ public object PlaceholderTwo {
     /**
      * This is a placeholder function that returns a set string.
      */
+    @JvmStatic
     public fun placeholder(): String {
         return "Placeholder: $EXPECTED"
     }
@@ -16,6 +17,7 @@ public object PlaceholderTwo {
     /**
      * This is a placeholder function that returns the original placeholder string from [Placeholder].
      */
+    @JvmStatic
     public fun originalPlaceholder(): String {
         return Placeholder.placeholder()
     }

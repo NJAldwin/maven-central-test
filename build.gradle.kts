@@ -25,7 +25,7 @@ buildscript {
 group = "us.aldwin.test"
 // after updating this, make sure to push a new git tag
 // (would be nice to eventually automate)
-version = "1.4.5"
+version = "1.5.0"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"

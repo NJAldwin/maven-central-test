@@ -9,6 +9,7 @@ public object Placeholder {
     /**
      * This is a placeholder function that returns a set string.
      */
+    @JvmStatic
     public fun placeholder(): String {
         return "Placeholder: $EXPECTED"
     }
