@@ -1,0 +1,7 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:us.aldwin.test////PointingToDeclaration/maven-central-test/us.aldwin.test/index.html
+$dokka.location:us.aldwin.test/Placeholder///PointingToDeclaration/maven-central-test/us.aldwin.test/-placeholder/index.html
+$dokka.location:us.aldwin.test/Placeholder/placeholder/#/PointingToDeclaration/maven-central-test/us.aldwin.test/-placeholder/placeholder.html
+us.aldwin.test
+
