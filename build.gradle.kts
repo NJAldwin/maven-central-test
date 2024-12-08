@@ -16,7 +16,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.3.0"
+version = "1.4.0"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -89,6 +89,21 @@ subprojects {
         }
     }
 
+    // html for GH pages
+    tasks.named<org.jetbrains.dokka.gradle.DokkaTaskPartial>("dokkaHtmlPartial").configure {
+        dokkaSourceSets {
+            configureEach {
+                reportUndocumented.set(true)
+                skipEmptyPackages.set(true)
+                skipDeprecated.set(false)
+                noStdlibLink.set(false)
+                noJdkLink.set(false)
+
+                // (use externalDocumentationLink here to add links to e.g. kotlinx libs)
+            }
+        }
+    }
+
     version = rootProject.version
     tasks.withType<Jar> {
         archiveBaseName.set(project.name)
@@ -113,38 +128,10 @@ subprojects {
             events("passed", "skipped", "failed")
         }
     }
-
-    tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
-        // should match the pattern used above for jreleaser
-        val prereleasePattern = """\d+\.\d+\.\d+-.+""".toRegex()
-        val projectDir = layout.buildDirectory.dir("docs/${project.name}").get().asFile
-        val versionedDir = layout.buildDirectory.dir("docs/${project.name}/v${rootProject.version}").get().asFile
-        outputDirectory.set(versionedDir)
-
-        doFirst {
-            versionedDir.mkdirs()
-        }
-
-        doLast {
-            // only generate the redirecting index file for non-prerelease versions
-            if (!prereleasePattern.matches(rootProject.version.toString())) {
-                val indexContent =
-                    """
-                    <html>
-                    <head>
-                        <title>Documentation for ${project.name}</title>
-                        <meta http-equiv="refresh" content="0; url=v${rootProject.version}/">
-                    </head>
-                    <body>
-                        <p>If you are not redirected, click <a href="v${rootProject.version}/">here</a> to access the latest documentation.</p>
-                    </body>
-                    </html>
-                    """.trimIndent()
-                file("$projectDir/index.html").writeText(indexContent)
-            }
-        }
-    }
 }
+
+// match semver `x.y.z-something`
+val isPrereleasePattern = """\d+\.\d+\.\d+-.+"""
 
 jreleaser {
     dryrun.set(System.getenv("CI").isNullOrBlank())
@@ -170,8 +157,7 @@ jreleaser {
             // skip tag because we're running release on tag creation
             skipTag.set(true)
             prerelease {
-                // match semver `x.y.z-something`
-                pattern.set("""\d+\.\d+\.\d+-.+""")
+                pattern.set(isPrereleasePattern)
             }
         }
     }
@@ -275,34 +261,74 @@ subprojects {
     }
 }
 
-// TODO @NJA: dokka supports multi-module, we'll just have to change how we handle versions
+val docsDir = layout.buildDirectory.dir("docs").get().asFile
+val versionedDocsDir = file("$docsDir/v${rootProject.version}")
 
-// master docs task, generates each submodule's docs and creates an index
-tasks.register("makeDocs") {
-    dependsOn(subprojects.map { it.tasks.named("dokkaHtml") })
-
-    val topLevelDir = layout.buildDirectory.dir("docs").get().asFile
+tasks.dokkaHtmlMultiModule.configure {
     doFirst {
-        topLevelDir.mkdirs()
+        versionedDocsDir.mkdirs()
+    }
+    outputDirectory.set(versionedDocsDir)
+}
+
+// master docs task, generates each submodule's docs and creates indices
+// root -> /stable -> /vx.y.z (excluding prereleases)
+// also:   /latest -> /vx.y.z-pre
+tasks.register("makeDocs") {
+    dependsOn("dokkaHtmlMultiModule")
+
+    val latestDir = file("$docsDir/latest")
+    val stableDir = file("$docsDir/stable")
+
+    doFirst {
+        versionedDocsDir.mkdirs()
     }
 
     doLast {
-        // copy each subproject's generated docs to the top-level dir
-        subprojects.forEach { subproject ->
-            val subprojectDir = subproject.layout.buildDirectory.dir("docs/${subproject.name}").get().asFile
-            val destinationDir = file("$topLevelDir/${subproject.name}")
-            subprojectDir.copyRecursively(destinationDir, overwrite = true)
+        if (!isPrereleasePattern.toRegex().matches(rootProject.version.toString())) {
+            stableDir.mkdirs()
+            file("$stableDir/index.html").writeText(
+                """
+                <html>
+                <head>
+                    <title>Latest Stable Documentation</title>
+                    <meta http-equiv="refresh" content="0; URL=../v${rootProject.version}/" />
+                </head>
+                <body>
+                    <p>If you are not redirected, click <a href="../v${rootProject.version}/">here</a> to access the latest stable documentation.</p>
+                </body>
+                </html>
+                """.trimIndent(),
+            )
         }
 
-        val indexContent =
-            buildString {
-                append("<html><head><title>Documentation Index</title></head><body>")
-                append("<h1>Documentation Index</h1><ul>")
-                subprojects.forEach { subproject ->
-                    append("<li><a href='${subproject.name}/'>${subproject.name}</a></li>")
-                }
-                append("</ul></body></html>")
-            }
-        file("$topLevelDir/index.html").writeText(indexContent)
+        latestDir.mkdirs()
+        file("$latestDir/index.html").writeText(
+            """
+            <html>
+            <head>
+                <title>Latest Documentation</title>
+                <meta http-equiv="refresh" content="0; URL=../v${rootProject.version}/" />
+            </head>
+            <body>
+                <p>If you are not redirected, click <a href="../v${rootProject.version}/">here</a> to access the latest documentation.</p>
+            </body>
+            </html>
+            """.trimIndent(),
+        )
+
+        file("$docsDir/index.html").writeText(
+            """
+            <html>
+            <head>
+                <title>Documentation Index</title>
+                <meta http-equiv="refresh" content="0; URL=stable/" />
+            </head>
+            <body>
+                <p>If you are not redirected, click <a href="stable/">here</a> to access the latest stable documentation.</p>
+            </body>
+            </html>
+            """.trimIndent(),
+        )
     }
 }
