@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":maven-central-test:dokkaHtmlPartial/main":[],":maven-central-second-test:dokkaHtmlPartial/main":[]}'
