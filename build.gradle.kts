@@ -16,7 +16,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.2.0-alpha1"
+version = "1.2.0"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"

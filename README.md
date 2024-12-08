@@ -8,6 +8,8 @@ https://central.sonatype.com/artifact/us.aldwin.test/maven-central-test
 
 https://central.sonatype.com/artifact/us.aldwin.test/maven-central-second-test
 
+Docs: https://njaldwin.github.io/maven-central-test/
+
 ```maven
 <dependency>
     <groupId>us.aldwin.test</groupId>
