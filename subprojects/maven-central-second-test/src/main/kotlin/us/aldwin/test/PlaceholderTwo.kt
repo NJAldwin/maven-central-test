@@ -12,4 +12,11 @@ public object PlaceholderTwo {
     public fun placeholder(): String {
         return "Placeholder: $EXPECTED"
     }
+
+    /**
+     * This is a placeholder function that returns the original placeholder string from [Placeholder].
+     */
+    public fun originalPlaceholder(): String {
+        return Placeholder.placeholder()
+    }
 }
