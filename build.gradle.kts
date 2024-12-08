@@ -1,5 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import org.jreleaser.model.Active
@@ -14,10 +16,16 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.20"
 }
 
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-base:1.9.20")
+    }
+}
+
 group = "us.aldwin.test"
 // after updating this, make sure to push a new git tag
 // (would be nice to eventually automate)
-version = "1.4.4"
+version = "1.4.5"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -118,6 +126,10 @@ subprojects {
                     remoteLineSuffix = "#L"
                 }
             }
+        }
+
+        pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+            footerMessage = "&copy; 2024 Nick Aldwin"
         }
     }
 
@@ -287,6 +299,10 @@ tasks.dokkaHtmlMultiModule.configure {
     }
     outputDirectory.set(versionedDocsDir)
     moduleName.set("maven-central-test")
+
+    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+        footerMessage = "&copy; 2024 Nick Aldwin"
+    }
 }
 
 // master docs task, generates each submodule's docs and creates indices
