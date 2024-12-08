@@ -16,7 +16,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.2.0"
+version = "1.3.0"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -68,6 +68,25 @@ subprojects {
     java {
         withJavadocJar()
         withSourcesJar()
+    }
+
+    // build javadoc jar via dokka
+    tasks.named<Jar>("javadocJar") {
+        dependsOn("dokkaJavadoc")
+        from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
+    }
+    tasks.dokkaJavadoc.configure {
+        dokkaSourceSets {
+            configureEach {
+                reportUndocumented.set(true)
+                skipEmptyPackages.set(true)
+                skipDeprecated.set(false)
+                noStdlibLink.set(false)
+                noJdkLink.set(false)
+
+                // (use externalDocumentationLink here to add links to e.g. kotlinx libs)
+            }
+        }
     }
 
     version = rootProject.version
@@ -255,6 +274,8 @@ subprojects {
         }
     }
 }
+
+// TODO @NJA: dokka supports multi-module, we'll just have to change how we handle versions
 
 // master docs task, generates each submodule's docs and creates an index
 tasks.register("makeDocs") {
