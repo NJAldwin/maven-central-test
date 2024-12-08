@@ -15,9 +15,9 @@ plugins {
 }
 
 group = "us.aldwin.test"
-// SHOULD MATCH GIT TAG!
-// TODO @NJA: investigate a plugin for this
-version = "1.4.3"
+// after updating this, make sure to push a new git tag
+// (would be nice to eventually automate)
+version = "1.4.4"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -286,6 +286,7 @@ tasks.dokkaHtmlMultiModule.configure {
         versionedDocsDir.mkdirs()
     }
     outputDirectory.set(versionedDocsDir)
+    moduleName.set("maven-central-test")
 }
 
 // master docs task, generates each submodule's docs and creates indices
