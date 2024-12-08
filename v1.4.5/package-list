@@ -1,0 +1,7 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:maven-central-second-test
+us.aldwin.test
+module:maven-central-test
+us.aldwin.test
