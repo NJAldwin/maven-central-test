@@ -10,12 +10,13 @@ plugins {
     id("com.github.ben-manes.versions") version "0.51.0"
     id("org.jreleaser") version "1.15.0"
     id("maven-publish")
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.1.0"
+version = "1.2.0-alpha1"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -44,9 +45,14 @@ tasks.withType<DependencyUpdatesTask> {
     }
 }
 
+tasks.named("ktlintCheck") {
+    mustRunAfter("ktlintFormat")
+}
+
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "org.jetbrains.dokka")
 
     kotlin {
         jvmToolchain(8)
@@ -86,6 +92,37 @@ subprojects {
         useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
+        }
+    }
+
+    tasks.named<org.jetbrains.dokka.gradle.DokkaTask>("dokkaHtml") {
+        // should match the pattern used above for jreleaser
+        val prereleasePattern = """\d+\.\d+\.\d+-.+""".toRegex()
+        val projectDir = layout.buildDirectory.dir("docs/${project.name}").get().asFile
+        val versionedDir = layout.buildDirectory.dir("docs/${project.name}/v${rootProject.version}").get().asFile
+        outputDirectory.set(versionedDir)
+
+        doFirst {
+            versionedDir.mkdirs()
+        }
+
+        doLast {
+            // only generate the redirecting index file for non-prerelease versions
+            if (!prereleasePattern.matches(rootProject.version.toString())) {
+                val indexContent =
+                    """
+                    <html>
+                    <head>
+                        <title>Documentation for ${project.name}</title>
+                        <meta http-equiv="refresh" content="0; url=v${rootProject.version}/">
+                    </head>
+                    <body>
+                        <p>If you are not redirected, click <a href="v${rootProject.version}/">here</a> to access the latest documentation.</p>
+                    </body>
+                    </html>
+                    """.trimIndent()
+                file("$projectDir/index.html").writeText(indexContent)
+            }
         }
     }
 }
@@ -216,5 +253,35 @@ subprojects {
                 }
             }
         }
+    }
+}
+
+// master docs task, generates each submodule's docs and creates an index
+tasks.register("makeDocs") {
+    dependsOn(subprojects.map { it.tasks.named("dokkaHtml") })
+
+    val topLevelDir = layout.buildDirectory.dir("docs").get().asFile
+    doFirst {
+        topLevelDir.mkdirs()
+    }
+
+    doLast {
+        // copy each subproject's generated docs to the top-level dir
+        subprojects.forEach { subproject ->
+            val subprojectDir = subproject.layout.buildDirectory.dir("docs/${subproject.name}").get().asFile
+            val destinationDir = file("$topLevelDir/${subproject.name}")
+            subprojectDir.copyRecursively(destinationDir, overwrite = true)
+        }
+
+        val indexContent =
+            buildString {
+                append("<html><head><title>Documentation Index</title></head><body>")
+                append("<h1>Documentation Index</h1><ul>")
+                subprojects.forEach { subproject ->
+                    append("<li><a href='${subproject.name}/'>${subproject.name}</a></li>")
+                }
+                append("</ul></body></html>")
+            }
+        file("$topLevelDir/index.html").writeText(indexContent)
     }
 }
