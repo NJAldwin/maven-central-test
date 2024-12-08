@@ -3,6 +3,7 @@ import com.github.benmanes.gradle.versions.updates.gradle.GradleReleaseChannel
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import org.jreleaser.model.Active
+import java.net.URI
 
 plugins {
     kotlin("jvm") version "1.9.25"
@@ -16,7 +17,7 @@ plugins {
 group = "us.aldwin.test"
 // SHOULD MATCH GIT TAG!
 // TODO @NJA: investigate a plugin for this
-version = "1.4.0"
+version = "1.4.1"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -83,8 +84,16 @@ subprojects {
                 skipDeprecated.set(false)
                 noStdlibLink.set(false)
                 noJdkLink.set(false)
+                jdkVersion.set(8)
+                includes.from("Module.md")
 
                 // (use externalDocumentationLink here to add links to e.g. kotlinx libs)
+
+                sourceLink {
+                    localDirectory = rootDir
+                    remoteUrl = URI("$ghUrl/tree/v${project.version}").toURL()
+                    remoteLineSuffix = "#L"
+                }
             }
         }
     }
@@ -98,8 +107,16 @@ subprojects {
                 skipDeprecated.set(false)
                 noStdlibLink.set(false)
                 noJdkLink.set(false)
+                jdkVersion.set(8)
+                includes.from("Module.md")
 
                 // (use externalDocumentationLink here to add links to e.g. kotlinx libs)
+
+                sourceLink {
+                    localDirectory = rootDir
+                    remoteUrl = URI("$ghUrl/tree/v${project.version}").toURL()
+                    remoteLineSuffix = "#L"
+                }
             }
         }
     }
