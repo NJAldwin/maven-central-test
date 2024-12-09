@@ -85,6 +85,7 @@ subprojects {
         from(tasks.dokkaJavadoc.flatMap { it.outputDirectory })
     }
     tasks.dokkaJavadoc.configure {
+        failOnWarning.set(true)
         dokkaSourceSets {
             configureEach {
                 reportUndocumented.set(true)
@@ -108,6 +109,7 @@ subprojects {
 
     // html for GH pages
     tasks.named<org.jetbrains.dokka.gradle.DokkaTaskPartial>("dokkaHtmlPartial").configure {
+        failOnWarning.set(true)
         dokkaSourceSets {
             configureEach {
                 reportUndocumented.set(true)

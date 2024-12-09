@@ -1,27 +1,29 @@
 package us.aldwin.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 public class PlaceholderTwoJavaTest {
   @Test
   public void itReturnsTheExpectedInformation() {
-    assert "Placeholder: Initial Version (2)".equals(PlaceholderTwo.placeholder());
+    assertEquals("Placeholder: Initial Version (2)", PlaceholderTwo.placeholder());
   }
 
   @SuppressWarnings("AccessStaticViaInstance")
   @Test
   public void itReturnsTheExpectedInformationUsingInstance() {
-    assert "Placeholder: Initial Version (2)".equals(PlaceholderTwo.INSTANCE.placeholder());
+    assertEquals("Placeholder: Initial Version (2)", PlaceholderTwo.INSTANCE.placeholder());
   }
 
   @Test
   public void itReturnsTheExpectedInformationFromTheOriginalPlaceholder() {
-    assert "Placeholder: Initial Version".equals(PlaceholderTwo.originalPlaceholder());
+    assertEquals("Placeholder: Initial Version", PlaceholderTwo.originalPlaceholder());
   }
 
   @SuppressWarnings("AccessStaticViaInstance")
   @Test
   public void itReturnsTheExpectedInformationFromTheOriginalPlaceholderUsingInstance() {
-    assert "Placeholder: Initial Version".equals(PlaceholderTwo.INSTANCE.originalPlaceholder());
+    assertEquals("Placeholder: Initial Version", PlaceholderTwo.INSTANCE.originalPlaceholder());
   }
 }
