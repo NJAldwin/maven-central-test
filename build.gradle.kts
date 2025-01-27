@@ -11,7 +11,7 @@ plugins {
     kotlin("jvm") version "1.9.25"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.2"
     id("com.github.ben-manes.versions") version "0.51.0"
-    id("org.jreleaser") version "1.15.0"
+    id("org.jreleaser") version "1.16.0"
     id("maven-publish")
     id("org.jetbrains.dokka") version "1.9.20"
 }
@@ -25,7 +25,7 @@ buildscript {
 group = "us.aldwin.test"
 // after updating this, make sure to push a new git tag
 // (would be nice to eventually automate)
-version = "1.5.0"
+version = "1.5.1"
 
 val ghUser = "NJAldwin"
 val ghRepo = "maven-central-test"
@@ -163,6 +163,20 @@ subprojects {
 
 // match semver `x.y.z-something`
 val isPrereleasePattern = """\d+\.\d+\.\d+-.+"""
+
+tasks.named("jreleaserFullRelease") {
+    doFirst {
+        val outputDir = layout.buildDirectory.dir("jreleaser").get().asFile
+        if (!outputDir.exists()) {
+            outputDir.mkdirs()
+        }
+    }
+}
+
+val outputDir = layout.buildDirectory.dir("jreleaser").get().asFile
+if (!outputDir.exists()) {
+    outputDir.mkdirs()
+}
 
 jreleaser {
     dryrun.set(System.getenv("CI").isNullOrBlank())
